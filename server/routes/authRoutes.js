@@ -4,7 +4,7 @@ const router = express.Router();
 
 // --- Dependencies for Auth Logic ---
 const User = require('../models/User'); 
-const bcrypt = require('bcryptjs'); // Or require('bcrypt')
+const bcrypt = require('bcrypt'); // Or require('bcrypt')
 const jwt = require('jsonwebtoken');
 
 // --- 1. REGISTRATION LOGIC ---
