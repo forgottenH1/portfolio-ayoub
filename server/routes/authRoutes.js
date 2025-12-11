@@ -53,10 +53,16 @@ router.post('/login', async (req, res) => {
         }
 
         // B. Check the password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid Username or Password' });
-        }
+const isMatch = await bcrypt.compare(password, user.password);
+
+// 🎯 ADD THIS DEBUGGING LINE 🎯
+console.log(`Login attempt for ${username}: Match=${isMatch}`); 
+
+if (!isMatch) {
+    // 🎯 ADD THIS DEBUGGING LINE TO THE ERROR BLOCK 🎯
+    console.log(`DEBUG: Failed comparison for ${username}. Stored Hash: ${user.password}`);
+    return res.status(400).json({ message: 'Invalid Username or Password' });
+}
 
         // C. Generate the JWT Token
         const payload = { userId: user.id };
