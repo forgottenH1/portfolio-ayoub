@@ -9,7 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 
 // 🎯 FIX 1: Make the PORT dynamic for Render and use 5000 as local fallback 🎯
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 // --- CORS Configuration (Middleware) ---
 // 🎯 FIX 2: Allow all origins (temporary) for easy deployment configuration 🎯
