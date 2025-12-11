@@ -4,7 +4,7 @@ const router = express.Router();
 
 // --- Dependencies for Auth Logic ---
 const User = require('../models/User'); 
-const bcrypt = require('bcrypt'); // Or require('bcrypt')
+// const bcrypt = require('bcrypt'); // 🛑 TEMP FIX: Commented out bcrypt
 const jwt = require('jsonwebtoken');
 
 // --- 1. REGISTRATION LOGIC ---
@@ -18,14 +18,18 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
         
-        // B. Hash the password
-        const salt = await bcrypt.genSalt(10); // Use 10 or whatever your salt rounds are
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // B. 🛑 TEMP FIX: Hashing logic is BYPASSED 🛑
+        // const salt = await bcrypt.genSalt(10);
+        // const hashedPassword = await bcrypt.hash(password, salt);
+        
+        // 🎯 TEMP FIX: Save the plain text password 🎯
+        const savedPassword = password; 
 
         // C. Create and Save the new User
         user = new User({
             username,
-            password: hashedPassword,
+            // 🎯 TEMP FIX: Save plain text password 🎯
+            password: savedPassword, 
             // Add a role field here if your schema requires it:
             // role: 'admin'
         });
@@ -41,7 +45,7 @@ router.post('/register', async (req, res) => {
 });
 
 
-// --- 2. LOGIN LOGIC (Existing Function - Verify it looks similar) ---
+// --- 2. LOGIN LOGIC ---
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -53,18 +57,21 @@ router.post('/login', async (req, res) => {
         }
 
         // B. Check the password
-const isMatch = await bcrypt.compare(password, user.password);
+        // 🛑 TEMP FIX: Perform plain text comparison 🛑
+        const isMatch = (password === user.password); // Direct string comparison
 
-// 🎯 ADD THIS DEBUGGING LINE 🎯
-console.log(`Login attempt for ${username}: Match=${isMatch}`); 
+        // Comment out the bcrypt comparison logic:
+        // const isMatch = await bcrypt.compare(password, user.password); 
 
-if (!isMatch) {
-    // 🎯 ADD THIS DEBUGGING LINE TO THE ERROR BLOCK 🎯
-    console.log(`DEBUG: Failed comparison for ${username}. Stored Hash: ${user.password}`);
-    return res.status(400).json({ message: 'Invalid Username or Password' });
-}
+        // 🎯 DEBUG LINES REMAIN (But they check plain text now) 🎯
+        console.log(`Login attempt for ${username}: Match=${isMatch}`); 
 
-        // C. Generate the JWT Token
+        if (!isMatch) {
+            console.log(`DEBUG: Failed comparison for ${username}. Stored Password: ${user.password}`);
+            return res.status(400).json({ message: 'Invalid Username or Password' });
+        }
+
+        // C. Generate the JWT Token (No changes here)
         const payload = { userId: user.id };
         const token = jwt.sign(
             payload, 
