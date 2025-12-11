@@ -1,7 +1,7 @@
 // client/src/App.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom'; // <-- Make sure 'Navigate' is here
+import { Routes, Route, Navigate } from 'react-router-dom'; 
 import { useTranslation } from 'react-i18next';
 
 // Import our page components
@@ -13,6 +13,7 @@ import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Footer from './components/Footer';
+import Register from './pages/Register';
 
 // 🎯 ADD THIS COMPONENT DEFINITION HERE 🎯
 /**
@@ -59,6 +60,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} /> 
         {/* Note: In a real app, Login would likely pass a function to update the state */}

@@ -1,45 +1,78 @@
 // server/routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+
+// --- Dependencies for Auth Logic ---
 const User = require('../models/User'); 
+const bcrypt = require('bcryptjs'); // Or require('bcrypt')
+const jwt = require('jsonwebtoken');
 
-// --- Temporary Hardcoded Admin Setup ---
-// In a real app, you would register and hash this password.
-// We only create the user if one doesn't exist for simplicity.
-const setupAdminUser = async () => {
-    const existingAdmin = await User.findOne({ username: 'ayoub_admin' });
-    if (!existingAdmin) {
-        const adminUser = new User({
-            username: 'ayoub_admin',
-            password: 'secure_password_123' 
+// --- 1. REGISTRATION LOGIC ---
+router.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        // A. Check if user already exists
+        let user = await User.findOne({ username });
+        if (user) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+        
+        // B. Hash the password
+        const salt = await bcrypt.genSalt(10); // Use 10 or whatever your salt rounds are
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // C. Create and Save the new User
+        user = new User({
+            username,
+            password: hashedPassword,
+            // Add a role field here if your schema requires it:
+            // role: 'admin'
         });
-        await adminUser.save();
-        console.log("Temporary Admin User created: ayoub_admin / secure_password_123");
-    }
-};
-setupAdminUser();
 
-// --- LOGIN ROUTE ---
+        await user.save();
+
+        res.status(201).json({ message: 'User registered successfully. Proceed to login.' });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Server error during registration' });
+    }
+});
+
+
+// --- 2. LOGIN LOGIC (Existing Function - Verify it looks similar) ---
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    try {
+        // A. Find the user
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid Username or Password' });
+        }
 
-    // 1. Check if user exists and password matches (no hashing used here for simplicity)
-    if (!user || user.password !== password) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        // B. Check the password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid Username or Password' });
+        }
+
+        // C. Generate the JWT Token
+        const payload = { userId: user.id };
+        const token = jwt.sign(
+            payload, 
+            process.env.JWT_SECRET, // Make sure this is in your Railway variables!
+            { expiresIn: '1h' }
+        );
+
+        res.json({ token, username: user.username });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Server error during login' });
     }
-
-    // 2. Create the JSON Web Token (JWT)
-    const token = jwt.sign(
-        { id: user._id, username: user.username },
-        process.env.JWT_SECRET,
-        { expiresIn: '1d' } // Token expires in 1 day
-    );
-
-    // 3. Send the token back to the frontend
-    res.json({ token, username: user.username });
 });
+
 
 module.exports = router;
