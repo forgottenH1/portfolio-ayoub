@@ -1,11 +1,10 @@
 // client/src/App.jsx - FINAL FIXED VERSION
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom'; 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'; // Keeping this import since other components might use it
 
 // Import our page components
 import Navbar from './components/Navbar';
-// import LanguageSwitcher from './components/LanguageSwitcher'; // Not used in this file
 import Home from './pages/Home';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
@@ -15,11 +14,12 @@ import Footer from './components/Footer';
 import Register from './pages/Register';
 
 // ----------------------------------------------------------------------
-// 🎯 FIXED AUTHENTICATION COMPONENT 🎯
-// Checks if the token exists in localStorage, ensuring persistence across refreshes.
-
+/**
+ * A component that protects routes by checking for a JWT token in localStorage.
+ * This ensures authentication is persistent across page refreshes.
+ */
 const ProtectedRoute = ({ children }) => {
-    // Check for the token, which means the user is authenticated
+    // 🎯 FINAL FIX: Check localStorage for the token directly 🎯
     const token = localStorage.getItem('token'); 
 
     if (!token) {
@@ -31,20 +31,13 @@ const ProtectedRoute = ({ children }) => {
 // ----------------------------------------------------------------------
 
 function App() {
-  // 1. Initialize authentication state. 
-  // This state is now managed using the token check in the useEffect below.
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  // We no longer need the isAuthenticated state since the ProtectedRoute handles the check.
+  // However, if the Login component requires setIsAuthenticated as a prop, we must keep the state.
+  
+  // Keeping the state hook just to satisfy the prop requirement of the Login component:
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token')); 
 
-  // 2. Check for token on initial component mount to keep the user logged in after refresh
-  useEffect(() => {
-    // Check if the token exists in local storage
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []); // Empty dependency array means this runs only once on initial load
-
-  // 3. Keep useTranslation for other components (if they use it)
+  // We keep this for now to test translations easily (if needed by other components)
   const { t } = useTranslation(); 
   
   return (
@@ -58,15 +51,14 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<Contact />} />
         
-        {/* Login Route - Passes function to set persistent state on successful login */}
+        {/* Login Route - Passes the state setter to update local state on successful login */}
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} /> 
 
-        {/* 🛑 CRITICAL FIX: The Dashboard Route 🛑 */}
-        {/* Path must be /dashboard to match the Login component's redirect */}
+        {/* 🛑 CRITICAL FIXED ROUTE: Dashboard 🛑 */}
         <Route 
-          path="/dashboard" 
+          path="/dashboard" // This path matches the successful redirect from Login.jsx
           element={
-            {/* Note: ProtectedRoute no longer uses isAuthenticated state, it checks localStorage */}
+            // The ProtectedRoute component handles the actual logic of checking the token.
             <ProtectedRoute> 
               <AdminDashboard />
             </ProtectedRoute>
