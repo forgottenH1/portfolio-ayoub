@@ -1,4 +1,4 @@
-// client/src/App.jsx - FINAL CONFIRMED PROTECTION FIX
+// client/src/App.jsx - FINAL CONFIRMED PROTECTION FIX WITH DEBUGGING
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom'; 
 import { useTranslation } from 'react-i18next'; 
@@ -18,8 +18,9 @@ import Register from './pages/Register';
  * Protected Route Component: Checks for the token.
  */
 const ProtectedRoute = ({ children }) => {
-    // This MUST block access if the token is missing.
+    // 🛑 DEBUGGING STEP: Log the token status 🛑
     const token = localStorage.getItem('token'); 
+    console.log(`[ProtectedRoute Debug]: Token found? ${!!token}`);
 
     if (!token) {
         // Blocks access and redirects to the login page
@@ -30,7 +31,6 @@ const ProtectedRoute = ({ children }) => {
 // ----------------------------------------------------------------------
 
 function App() {
-  // Keeping the state hook just to satisfy the prop requirement of the Login component:
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
   const { t } = useTranslation(); 
   
@@ -48,17 +48,17 @@ function App() {
         {/* Login Route */}
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} /> 
 
-        {/* 🛑 FIX: The Admin Dashboard is now ONLY accessible via the PROTECTED route /admin 🛑 */}
+        {/* 🛑 PROTECTED ROUTE: /admin 🛑 */}
         <Route 
-          path="/admin" // Admin access path
+          path="/admin" 
           element={
-            <ProtectedRoute> // The crucial protection wrapper
+            <ProtectedRoute> 
               <AdminDashboard />
             </ProtectedRoute>
           } 
         /> 
 
-        {/* FIX: Redirect old /dashboard URL to the protected /admin path */}
+        {/* Redirect /dashboard to the protected /admin path */}
         <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 
         {/* Fallback route */}
