@@ -1,8 +1,26 @@
-// server/routes/projectRoutes.js - FINAL FIX
+// server/routes/projectRoutes.js - FINAL FIXED CODE
 const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
 const jwt = require('jsonwebtoken'); 
+
+// ----------------------------------------------------------------------
+// 🎯 PUBLIC ROUTE (Dashboard Fetch) - This must be defined first to resolve the 404 error! 🎯
+// ----------------------------------------------------------------------
+
+// GET all projects (This is the public route for the dashboard list)
+router.get('/', async (req, res) => {
+    try {
+        console.log("SUCCESS: Reached public GET /api/projects route.");
+        const projects = await Project.find().sort({ _id: -1 }); // Display newest first
+        res.json(projects);
+    } catch (err) {
+        // If this fails, it is a Mongoose/DB error (500)
+        console.error("Database Error on GET /projects:", err);
+        res.status(500).json({ message: "Error fetching projects from database." });
+    }
+});
+
 
 // ----------------------------------------------------------------------
 // 🎯 CRITICAL FIX: AUTHENTICATION MIDDLEWARE WITH DEBUGGING 🎯
@@ -20,7 +38,7 @@ const protect = (req, res, next) => {
 
     try {
         // 1. Verify the token using the same secret key used for signing
-        // 🎯 FINAL FIX 2: Ensure JWT_SECRET is treated as a string for verification 🎯
+        // 🎯 FIX: Ensure JWT_SECRET is treated as a string for verification 🎯
         const decoded = jwt.verify(token, String(process.env.JWT_SECRET)); 
         
         // 2. Attach the user payload to the request
@@ -30,7 +48,7 @@ const protect = (req, res, next) => {
         console.log("TOKEN SUCCESS: User ID", req.userId);
         next();
     } catch (err) {
-        // ... (Debug logs remain here to help if the issue is still present) ...
+        // ... (Debug logs remain here) ...
         console.error("TOKEN VERIFICATION FAILED:", err.message);
         console.error("JWT_SECRET Length:", process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 'undefined');
         
@@ -41,9 +59,41 @@ const protect = (req, res, next) => {
 
 
 // ----------------------------------------------------------------------
-// 🎯 PROTECTED ROUTES (No changes below this line) 🎯
+// 🎯 PROTECTED CRUD ROUTES 🎯
 // ----------------------------------------------------------------------
 
-// ... (All router.get, router.post, router.put, router.delete calls remain the same) ...
+// POST a new project (PROTECTED)
+router.post('/', protect, async (req, res) => {
+    const project = new Project(req.body);
+
+    try {
+        const newProject = await project.save();
+        res.status(201).json(newProject);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// PUT (Update) a project (PROTECTED)
+router.put('/:id', protect, async (req, res) => {
+    try {
+        const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!updatedProject) return res.status(404).json({ message: 'Project not found' });
+        res.json(updatedProject);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// DELETE a project (PROTECTED)
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const deletedProject = await Project.findByIdAndDelete(req.params.id);
+        if (!deletedProject) return res.status(404).json({ message: 'Project not found' });
+        res.json({ message: 'Project deleted' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 module.exports = router;
