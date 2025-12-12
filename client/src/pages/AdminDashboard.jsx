@@ -117,7 +117,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="container admin-container">
-            <h1 style={{color: 'red', textAlign: 'center'}}>DASHBOARD LOAD TEST SUCCESSFUL</h1> 
+            <h1 style={{color: 'green', textAlign: 'center'}}>WELCOME AYOUB TO YOUR ADMIN DASHBOARD</h1> 
 
             <h2 className="page-header">{t(isEditing ? "Edit Project" : "Add New Project")}</h2> 
             {statusMessage && <p className={`status-message ${statusMessage.startsWith('SUCCESS') ? 'success' : 'error'}`}>{statusMessage}</p>}
