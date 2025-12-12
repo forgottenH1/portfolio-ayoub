@@ -11,7 +11,7 @@ import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Footer from './components/Footer';
-import Register from './pages/Register';
+
 
 // ----------------------------------------------------------------------
 /**
@@ -42,7 +42,6 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<Contact />} />
         
         {/* Login Route */}
