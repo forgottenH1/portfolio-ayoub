@@ -29,7 +29,7 @@ const Login = () => {
                 setMessage("Login Successful! Redirecting...");
                 
                 // 4. Navigate ONLY AFTER the token is saved
-                navigate('/dashboard'); 
+                navigate('/admin'); // <--- MUST REDIRECT TO /admin befour it was /dashboard
             } else {
                 setMessage("Login failed: Token not received.");
             }
@@ -61,7 +61,7 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <button type="submit">Log In</button>
+                    <button type="submit" className="submit-button">Log In</button>
                 </form>
                 {message && <p className={`message ${message.includes('Successful') ? 'success' : 'error'}`}>{message}</p>}
             </div>

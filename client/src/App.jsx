@@ -1,9 +1,9 @@
-// client/src/App.jsx - FINAL FIXED VERSION
+// client/src/App.jsx - FINAL CONFIRMED PROTECTION FIX
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom'; 
-import { useTranslation } from 'react-i18next'; // Keeping this import since other components might use it
+import { useTranslation } from 'react-i18next'; 
 
-// Import our page components
+// Import components
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
@@ -15,15 +15,14 @@ import Register from './pages/Register';
 
 // ----------------------------------------------------------------------
 /**
- * A component that protects routes by checking for a JWT token in localStorage.
- * This ensures authentication is persistent across page refreshes.
+ * Protected Route Component: Checks for the token.
  */
 const ProtectedRoute = ({ children }) => {
-    // 🎯 FINAL FIX: Check localStorage for the token directly 🎯
+    // This MUST block access if the token is missing.
     const token = localStorage.getItem('token'); 
 
     if (!token) {
-        // Redirects the user to the /login path if no token is found
+        // Blocks access and redirects to the login page
         return <Navigate to="/login" replace />;
     }
     return children;
@@ -31,13 +30,8 @@ const ProtectedRoute = ({ children }) => {
 // ----------------------------------------------------------------------
 
 function App() {
-  // We no longer need the isAuthenticated state since the ProtectedRoute handles the check.
-  // However, if the Login component requires setIsAuthenticated as a prop, we must keep the state.
-  
   // Keeping the state hook just to satisfy the prop requirement of the Login component:
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token')); 
-
-  // We keep this for now to test translations easily (if needed by other components)
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
   const { t } = useTranslation(); 
   
   return (
@@ -51,19 +45,21 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/contact" element={<Contact />} />
         
-        {/* Login Route - Passes the state setter to update local state on successful login */}
+        {/* Login Route */}
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} /> 
 
-        {/* 🛑 CRITICAL FIXED ROUTE: Dashboard 🛑 */}
-        <Route 
-          path="/dashboard" // This path matches the successful redirect from Login.jsx
+        {/* 🛑 FIX: The Admin Dashboard is now ONLY accessible via the PROTECTED route /admin 🛑 */}
+        <Route 
+          path="/admin" // Admin access path
           element={
-            // The ProtectedRoute component handles the actual logic of checking the token.
-            <ProtectedRoute> 
+            <ProtectedRoute> // The crucial protection wrapper
               <AdminDashboard />
             </ProtectedRoute>
           } 
         /> 
+
+        {/* FIX: Redirect old /dashboard URL to the protected /admin path */}
+        <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 
         {/* Fallback route */}
         <Route path="*" element={<div>404 Page Not Found</div>} />
