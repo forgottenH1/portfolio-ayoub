@@ -143,7 +143,9 @@ const AdminDashboard = () => {
 
     return (
         <div className="container admin-container">
-            
+            {/* 🛑 TEST STRING: If you see this, the component is loading! 🛑 */}
+            <h1 style={{color: 'red'}}>DASHBOARD LOAD TEST SUCCESSFUL</h1> 
+            {/* 🛑 TEST STRING 🛑 */}
             <h2 className="page-header">{t(isEditing ? "Edit Project" : "Add New Project")}</h2> 
             {statusMessage && <p className={`status-message ${statusMessage.startsWith('SUCCESS') ? 'success' : 'error'}`}>{statusMessage}</p>}
             
