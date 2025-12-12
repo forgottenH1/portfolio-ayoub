@@ -10,7 +10,7 @@ const API_URL = 'https://enchanting-upliftment-production.up.railway.app/api';
 const dummyT = (key) => key;
 
 const AdminDashboard = () => {
-    // 🛑 Crash Prevention: Use dummy 't' 🛑
+    // 🛑 Crash Prevention: Use dummy 't' 🛑
     const t = dummyT;
     const navigate = useNavigate();
 
@@ -60,66 +60,86 @@ const AdminDashboard = () => {
     }, []); 
 
     // --- Form Handlers and CRUD functions (truncated for brevity, assume they are correct) ---
-    // Make sure you include the full handleFormSubmit, handleDelete, and handleEdit functions!
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        const client = getAuthClient();
-        setStatusMessage('Processing...');
-        try {
-            if (isEditing) {
-                await client.put(`/projects/${currentProject._id}`, formData);
-                setStatusMessage(`SUCCESS: Project updated!`);
-            } else {
-                await client.post('/projects', formData);
-                setStatusMessage(`SUCCESS: Project added!`);
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+        const client = getAuthClient();
+        setStatusMessage('Processing...');
+        
+        // 🛑 FIX: Explicitly define payload for clarity, though sending formData directly should work 🛑
+        const projectPayload = {
+            title: formData.title,
+            descriptionEn: formData.descriptionEn,
+            descriptionFr: formData.descriptionFr,
+            imageUrl: formData.imageUrl,
+            link: formData.link, 
+        };
+
+        try {
+            if (isEditing) {
+                await client.put(`/projects/${currentProject._id}`, projectPayload);
+                setStatusMessage(`SUCCESS: Project updated!`);
+            } else {
+                await client.post('/projects', projectPayload);
+                setStatusMessage(`SUCCESS: Project added!`);
+            }
+            setFormData({ title: '', descriptionEn: '', descriptionFr: '', imageUrl: '', link: '' });
+            setIsEditing(false);
+            setCurrentProject(null);
+            fetchProjects(); 
+        } catch (error) {
+            // 🛑 FIX: Enhanced Error Logging and Status Message 🛑
+            console.error("Submission Error:", error);
+            
+            const status = error.response ? error.response.status : 'N/A';
+            let serverMessage = 'Unknown Error';
+            
+            if (error.response && error.response.data && error.response.data.message) {
+                serverMessage = error.response.data.message;
+            } else if (error.message) {
+                serverMessage = error.message;
             }
-            setFormData({ title: '', descriptionEn: '', descriptionFr: '', imageUrl: '', link: '' });
-            setIsEditing(false);
-            setCurrentProject(null);
-            fetchProjects(); 
-        } catch (error) {
-            console.error("Submission Error:", error);
-            setStatusMessage(`ERROR: Failed to save project.`);
-        }
-    };
+            
+            setStatusMessage(`ERROR (${status}): Failed to save project. Detail: ${serverMessage}`);
+        }
+    };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this project?')) return;
-        const client = getAuthClient();
-        setStatusMessage('Deleting project...');
-        try {
-            await client.delete(`/projects/${id}`);
-            setStatusMessage('SUCCESS: Project deleted.');
-            fetchProjects(); 
-        } catch (error) {
-            setStatusMessage('ERROR: Failed to delete project.');
-        }
-    };
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this project?')) return;
+        const client = getAuthClient();
+        setStatusMessage('Deleting project...');
+        try {
+            await client.delete(`/projects/${id}`);
+            setStatusMessage('SUCCESS: Project deleted.');
+            fetchProjects(); 
+        } catch (error) {
+            setStatusMessage('ERROR: Failed to delete project.');
+        }
+    };
 
-    const handleEdit = (project) => {
-        setIsEditing(true);
-        setCurrentProject(project);
-        setFormData({
-            title: project.title, descriptionEn: project.descriptionEn, descriptionFr: project.descriptionFr, imageUrl: project.imageUrl, link: project.link
-        });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    const handleEdit = (project) => {
+        setIsEditing(true);
+        setCurrentProject(project);
+        setFormData({
+            title: project.title, descriptionEn: project.descriptionEn, descriptionFr: project.descriptionFr, imageUrl: project.imageUrl, link: project.link
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     
     // --- Render Logic ---
     
-    // 🛑 REMOVED: if (!localStorage.getItem('token')) { return ... }
-    
+    // 🛑 REMOVED: if (!localStorage.getItem('token')) { return ... }
+    
     if (loading) return <div className="container" style={{padding: '50px', textAlign: 'center'}}>Loading dashboard content...</div>;
 
     return (
         <div className="container admin-container">
             <h1 style={{color: 'green', textAlign: 'center'}}>WELCOME AYOUB TO YOUR ADMIN DASHBOARD</h1> 
 
-            <h2 className="page-header">{t(isEditing ? "Edit Project" : "Add New Project")}</h2> 
+            <h2 className="page-header">{t(isEditing ? "Edit Project" : "Add New Project")}</h2> 
             {statusMessage && <p className={`status-message ${statusMessage.startsWith('SUCCESS') ? 'success' : 'error'}`}>{statusMessage}</p>}
             
             {/* The submission/edit form */}
@@ -146,26 +166,4 @@ const AdminDashboard = () => {
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Link</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {projects.map(project => (
-                            <tr key={project._id}>
-                                <td>{project.title}</td>
-                                <td><a href={project.link} target="_blank" rel="noopener noreferrer">View</a></td>
-                                <td className="action-buttons">
-                                    <button onClick={() => handleEdit(project)} className="edit-button">Edit</button>
-                                    <button onClick={() => handleDelete(project._id)} className="delete-button">Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};
-
-export default AdminDashboard;
+                            <th></th>
