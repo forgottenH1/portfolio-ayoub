@@ -8,11 +8,11 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-// 🎯 FIX 1: Make the PORT dynamic for Render and use 5000 as local fallback 🎯
+//  FIX 1: Make the PORT dynamic for Render and use 5000 as local fallback .
 const PORT = process.env.PORT || 8080;
 
 // --- CORS Configuration (Middleware) ---
-// 🎯 FIX 2: Allow all origins (temporary) for easy deployment configuration 🎯
+// FIX 2: Allow all origins (temporary) for easy deployment configuration .
 // Render automatically provides the PORT and expects the app to bind to it.
 const corsOptions = {
     // We replace the specific local origin with a wildcard '*' 
@@ -45,5 +45,5 @@ app.get('/', (req, res) => {
 
 
 // Start the Server
-// 🎯 FIX 3: Use the dynamic PORT variable 🎯
+//  FIX 3: Use the dynamic PORT variable 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
