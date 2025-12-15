@@ -81,6 +81,6 @@ I am open to connecting and discussing opportunities in web development. Feel fr
 
 ---
 
-### 🚀 Future Goals
+### 🚀 Future Goals :
 
 My next steps involve mastering advanced state management techniques in React and exploring cloud services like AWS or Azure to enhance my deployment skills.
