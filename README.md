@@ -2,7 +2,7 @@
 
 Welcome to my personal web development portfolio! This repository showcases the projects and skills I have acquired while learning and growing as a web developer.
 
-#### ✨ Tech Stack Badges
+### ✨ Tech Stack Badges
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -12,9 +12,9 @@ Welcome to my personal web development portfolio! This repository showcases the 
 ![Express](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 
-***
+******
 
-#### 🤝 Learning Partners
+### 🤝 Learning Partners
 
 The skills and projects within this portfolio were developed with the support and guidance of the following organizations:
 
@@ -25,13 +25,13 @@ The skills and projects within this portfolio were developed with the support an
 
 ---
 
-#### 🌐 About Me
+### 🌐 About Me
 
 I am **AYOUB EL ARABI**, a passionate aspiring web developer from **Morocco**. My journey into web development began with a focus on practical, hands-on learning, which the web4jobs platform has provided. I am dedicated to building efficient, modern, and user-friendly web applications. I believe in continuous learning and applying best practices in front-end and back-end development.
 
 ---
 
-#### ✨ Featured Projects
+### ✨ Featured Projects
 
 This section highlights the major projects I have completed, demonstrating my proficiency in various technologies. These projects are a direct result of the lessons and challenges provided by web4jobs.
 
@@ -46,7 +46,7 @@ This section highlights the major projects I have completed, demonstrating my pr
 
 ---
 
-#### 🛠️ Skills & Technologies
+### 🛠️ Skills & Technologies
 
 Here are the key technologies I have worked with and demonstrated proficiency in throughout my web4jobs training:
 
@@ -59,7 +59,7 @@ Here are the key technologies I have worked with and demonstrated proficiency in
 
 ---
 
-#### 📚 My Learning Journey
+### 📚 My Learning Journey
 
 My training included:
 
@@ -71,7 +71,7 @@ I am grateful for the foundation laid by my learning partners and look forward t
 
 ---
 
-#### 📧 Get In Touch 👋
+### 📧 Get In Touch 👋
 
 I am open to connecting and discussing opportunities in web development. Feel free to reach out!
 
@@ -81,6 +81,6 @@ I am open to connecting and discussing opportunities in web development. Feel fr
 
 ---
 
-#### 🚀 Future Goals
+### 🚀 Future Goals
 
 My next steps involve mastering advanced state management techniques in React and exploring cloud services like AWS or Azure to enhance my deployment skills.
